@@ -18,7 +18,7 @@ This repository contains rules for:
 
 ```bash
 # In your project root
-git clone https://github.com/yourusername/cursor-rules-repository .cursor-rules
+git clone https://github.com/pallavjha25/cursor-rules-repository .cursor-rules
 cp -r .cursor-rules/.cursor .
 rm -rf .cursor-rules
 ```
@@ -27,7 +27,7 @@ rm -rf .cursor-rules
 
 ```bash
 # Add as submodule
-git submodule add https://github.com/yourusername/cursor-rules-repository .cursor-rules
+git submodule add https://github.com/pallavjha25/cursor-rules-repository .cursor-rules
 
 # Copy rules to your project
 cp -r .cursor-rules/.cursor .
