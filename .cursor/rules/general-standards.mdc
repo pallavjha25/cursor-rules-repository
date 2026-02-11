@@ -155,20 +155,26 @@ Example:
 ❌ BAD: "fixed stuff"
 ```
 
-### No Co-author Lines
+### No Co-author Lines or Trailers
 
-When creating or suggesting commit messages, do **not** add `Co-authored-by:` lines or any co-author trailers to the commit message body or footer.
+When creating commit messages or **running git commit commands**, do **not** add Co-authored-by or any trailers.
+
+**Commands:** Never use `--trailer` (or similar) when running git. Use only plain commit with message.
+
+- ✅ **GOOD:** `git commit -m "feat: add user authentication with JWT"`
+- ❌ **BAD:** `git commit -m "feat: add user authentication" --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>"`
+- ❌ **BAD:** Any `git commit` invocation that includes `--trailer`, `-t`, or appends Co-authored-by to the message
+
+**Commit message body:** Do not add `Co-authored-by:` lines or any co-author trailers in the message text.
 
 - Use only the single-line conventional commit format: `<type>: <description>`
-- Do not append co-author credits, "Reviewed-by", or similar trailers unless the user explicitly asks for them
-- Keep commit messages minimal: subject line only, or subject + optional short body—no footer with Co-authored-by
+- Do not append co-author credits, "Reviewed-by", or similar trailers unless the user explicitly asks
+- Keep commits minimal: subject line only (or subject + short body)—no footer with Co-authored-by
 
 ```
-✅ GOOD commit message:
-feat: add user authentication with JWT
+✅ GOOD:
+git commit -m "feat: add user authentication with JWT"
 
-❌ BAD commit message:
-feat: add user authentication with JWT
-
-Co-authored-by: Assistant <assistant@cursor.sh>
+❌ BAD:
+git commit -m "feat: add user authentication" --trailer "Co-authored-by: Cursor <cursoragent@cursor.com>"
 ```
