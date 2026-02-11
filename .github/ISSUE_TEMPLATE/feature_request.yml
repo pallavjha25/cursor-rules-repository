@@ -1,0 +1,68 @@
+name: 💡 Feature Request
+description: Suggest a new rule or improvement
+title: "[FEATURE] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement! We appreciate your input.
+  
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: What type of feature is this?
+      options:
+        - New rule file for a different language/framework
+        - Improvement to existing rule
+        - New pattern/best practice to add
+        - Documentation improvement
+        - Other
+    validations:
+      required: true
+  
+  - type: input
+    id: language
+    attributes:
+      label: Language/Framework
+      description: If requesting a new rule, which language or framework?
+      placeholder: e.g., Rust, Vue.js, Java, etc.
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature Description
+      description: Describe the feature or improvement you'd like to see
+      placeholder: It would be helpful if the rules included...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why would this be useful?
+      placeholder: This would help developers by...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: If applicable, provide an example of what the rule should enforce
+      render: markdown
+      placeholder: |
+        ```language
+        // ✅ GOOD
+        good_example()
+        
+        // ❌ BAD
+        bad_example()
+        ```
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information, links to documentation, etc.

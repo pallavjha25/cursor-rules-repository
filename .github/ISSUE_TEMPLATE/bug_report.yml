@@ -1,0 +1,67 @@
+name: 🐛 Bug Report
+description: Report a rule that's not working correctly
+title: "[BUG] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug! Please fill out the sections below.
+  
+  - type: dropdown
+    id: rule-file
+    attributes:
+      label: Which rule file has the issue?
+      options:
+        - python-standards.mdc
+        - typescript-standards.mdc
+        - react-patterns.mdc
+        - docker-kubernetes.mdc
+        - general-standards.mdc
+        - Other
+    validations:
+      required: true
+  
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What's the issue with the rule?
+      placeholder: The rule suggests X but it should suggest Y because...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Behavior
+      description: What did you expect to happen?
+      placeholder: I expected Cursor to suggest...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual Behavior
+      description: What actually happened?
+      placeholder: Instead, Cursor suggested...
+    validations:
+      required: true
+  
+  - type: textarea
+    id: context
+    attributes:
+      label: Code Example
+      description: If applicable, provide a code example that demonstrates the issue
+      render: typescript
+      placeholder: |
+        function example() {
+          // Your code here
+        }
+  
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other information that might help
