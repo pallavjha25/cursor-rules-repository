@@ -1,0 +1,130 @@
+---
+description: React component patterns and best practices
+globs: **/*.tsx,**/*.jsx
+alwaysApply: false
+---
+
+# React Patterns
+
+## Component Structure
+
+Use functional components with TypeScript:
+
+```typescript
+// ✅ GOOD
+interface UserProfileProps {
+  userId: string;
+  onUpdate?: (user: User) => void;
+}
+
+export function UserProfile({ userId, onUpdate }: UserProfileProps) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    loadUser(userId);
+  }, [userId]);
+  
+  return <div>{loading ? <Spinner /> : <UserCard user={user} />}</div>;
+}
+
+// ❌ BAD
+export function UserProfile(props: any) {
+  const [user, setUser] = useState(null);
+  
+  useEffect(() => {
+    fetch(`/api/users/${props.userId}`).then(r => r.json()).then(setUser);
+  });
+  
+  return <div>{user && <UserCard user={user} />}</div>;
+}
+```
+
+## Hooks Best Practices
+
+Extract custom hooks for reusable logic:
+
+```typescript
+// ✅ GOOD
+function useUser(userId: string) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  
+  useEffect(() => {
+    let cancelled = false;
+    
+    async function fetchUser() {
+      try {
+        const data = await userService.get(userId);
+        if (!cancelled) {
+          setUser(data);
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err as Error);
+          setLoading(false);
+        }
+      }
+    }
+    
+    fetchUser();
+    return () => { cancelled = true; };
+  }, [userId]);
+  
+  return { user, loading, error };
+}
+
+// Usage
+function UserProfile({ userId }: Props) {
+  const { user, loading, error } = useUser(userId);
+  
+  if (loading) return <Spinner />;
+  if (error) return <ErrorMessage error={error} />;
+  return <UserCard user={user} />;
+}
+```
+
+## Performance Optimization
+
+Use memoization appropriately:
+
+```typescript
+// ✅ GOOD - Memoize expensive computations
+const expensiveValue = useMemo(
+  () => processLargeDataset(data),
+  [data]
+);
+
+// ✅ GOOD - Memoize callbacks passed to children
+const handleSubmit = useCallback(
+  (values: FormData) => {
+    onSubmit(values, userId);
+  },
+  [onSubmit, userId]
+);
+
+// ❌ BAD - Unnecessary memoization
+const displayName = useMemo(() => `${firstName} ${lastName}`, [firstName, lastName]);
+```
+
+## State Management
+
+Keep state as local as possible:
+
+```typescript
+// ✅ GOOD - Local state when not shared
+function TodoList() {
+  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  const todos = useTodos(); // From context/store only when shared
+  
+  const filteredTodos = todos.filter(todo => {
+    if (filter === 'active') return !todo.completed;
+    if (filter === 'completed') return todo.completed;
+    return true;
+  });
+  
+  return <>{filteredTodos.map(todo => <TodoItem key={todo.id} todo={todo} />)}</>;
+}
+```

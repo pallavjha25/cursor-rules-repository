@@ -1,0 +1,109 @@
+---
+description: TypeScript coding standards and conventions
+globs: **/*.ts
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+## Type Safety
+
+Prefer explicit types over `any`:
+
+```typescript
+// ✅ GOOD
+interface UserData {
+  id: string;
+  email: string;
+  roles: string[];
+}
+
+function processUser(user: UserData): string {
+  return user.email.toLowerCase();
+}
+
+// ❌ BAD
+function processUser(user: any) {
+  return user.email.toLowerCase();
+}
+```
+
+## Error Handling
+
+Use custom error classes and proper error handling:
+
+```typescript
+// ✅ GOOD
+class ValidationError extends Error {
+  constructor(message: string, public field: string) {
+    super(message);
+    this.name = 'ValidationError';
+  }
+}
+
+async function validateUser(data: unknown): Promise<UserData> {
+  try {
+    return UserSchema.parse(data);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw new ValidationError('Invalid user data', error.issues[0].path[0]);
+    }
+    throw error;
+  }
+}
+
+// ❌ BAD
+async function validateUser(data: any) {
+  try {
+    return UserSchema.parse(data);
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+}
+```
+
+## Async/Await
+
+Always handle promises properly:
+
+```typescript
+// ✅ GOOD
+async function fetchUserData(userId: string): Promise<User | null> {
+  try {
+    const response = await fetch(`/api/users/${userId}`);
+    if (!response.ok) {
+      logger.error(`Failed to fetch user ${userId}: ${response.status}`);
+      return null;
+    }
+    return await response.json();
+  } catch (error) {
+    logger.error('Network error:', error);
+    return null;
+  }
+}
+
+// ❌ BAD
+function fetchUserData(userId: string) {
+  return fetch(`/api/users/${userId}`).then(r => r.json()).catch(() => null);
+}
+```
+
+## Naming Conventions
+
+- Use camelCase for variables and functions
+- Use PascalCase for classes and interfaces
+- Use UPPER_CASE for constants
+- Prefix interfaces with `I` only when necessary for disambiguation
+
+```typescript
+// ✅ GOOD
+const maxRetries = 3;
+class UserService {}
+interface UserRepository {}
+
+// ❌ BAD
+const MaxRetries = 3;
+class userService {}
+interface IUserRepository {}
+```

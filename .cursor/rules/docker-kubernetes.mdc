@@ -1,0 +1,165 @@
+---
+description: Docker and Kubernetes best practices
+globs: **/Dockerfile,**/docker-compose.yml,**/k8s/**/*.yaml,**/k8s/**/*.yml
+alwaysApply: false
+---
+
+# Docker & Kubernetes Best Practices
+
+## Dockerfile Standards
+
+### Multi-stage Builds
+
+Use multi-stage builds to reduce image size:
+
+```dockerfile
+# ✅ GOOD
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+USER node
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
+
+# ❌ BAD
+FROM node:20
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build
+EXPOSE 3000
+CMD ["node", "dist/index.js"]
+```
+
+### Layer Optimization
+
+Order instructions from least to most frequently changing:
+
+```dockerfile
+# ✅ GOOD
+FROM python:3.11-slim
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+CMD ["python", "app.py"]
+
+# ❌ BAD
+FROM python:3.11-slim
+COPY . /app
+WORKDIR /app
+RUN pip install -r requirements.txt
+CMD ["python", "app.py"]
+```
+
+### Security
+
+Always run as non-root user:
+
+```dockerfile
+# ✅ GOOD
+FROM python:3.11-slim
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+WORKDIR /app
+COPY --chown=appuser:appuser . .
+USER appuser
+CMD ["python", "app.py"]
+
+# ❌ BAD
+FROM python:3.11-slim
+COPY . /app
+WORKDIR /app
+CMD ["python", "app.py"]
+```
+
+## Kubernetes Manifests
+
+### Resource Limits
+
+Always define resource requests and limits:
+
+```yaml
+# ✅ GOOD
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: myapp:latest
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+
+# ❌ BAD
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: myapp:latest
+```
+
+### Health Checks
+
+Define liveness and readiness probes:
+
+```yaml
+# ✅ GOOD
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  template:
+    spec:
+      containers:
+      - name: app
+        image: myapp:latest
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+```
+
+### Labels and Selectors
+
+Use consistent labeling:
+
+```yaml
+# ✅ GOOD
+metadata:
+  labels:
+    app: myapp
+    component: backend
+    environment: production
+    version: "1.2.0"
+```

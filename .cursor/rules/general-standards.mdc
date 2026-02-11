@@ -1,0 +1,156 @@
+---
+description: General coding standards that apply to all projects
+alwaysApply: true
+---
+
+# General Coding Standards
+
+## Code Quality Principles
+
+### 1. Write Self-Documenting Code
+
+Choose clear, descriptive names over clever ones:
+
+```
+✅ GOOD: calculateMonthlyRecurringRevenue()
+❌ BAD: calcMRR()
+
+✅ GOOD: isUserEligibleForPremiumFeatures()
+❌ BAD: checkUser()
+```
+
+### 2. Keep Functions Small and Focused
+
+Each function should do one thing well:
+
+- Maximum 50 lines per function (guideline, not strict rule)
+- Single responsibility principle
+- Easy to test in isolation
+
+### 3. Avoid Deep Nesting
+
+Keep nesting to 3 levels or less:
+
+```
+✅ GOOD: Use early returns
+function processUser(user) {
+  if (!user) return null;
+  if (!user.isActive) return null;
+  
+  return formatUserData(user);
+}
+
+❌ BAD: Deep nesting
+function processUser(user) {
+  if (user) {
+    if (user.isActive) {
+      return formatUserData(user);
+    }
+  }
+  return null;
+}
+```
+
+## Error Handling
+
+### Never Swallow Errors
+
+Always log errors and handle them appropriately:
+
+```
+✅ GOOD:
+- Log errors with context
+- Throw or return error states
+- Use proper error types
+
+❌ BAD:
+- Empty catch blocks
+- Generic console.log without context
+- Ignoring error states
+```
+
+## Testing
+
+### Write Testable Code
+
+- Use dependency injection
+- Avoid global state
+- Keep side effects explicit
+- Mock external dependencies
+
+### Test Naming
+
+Use descriptive test names that explain what is being tested:
+
+```
+✅ GOOD:
+- "should return 404 when user does not exist"
+- "should calculate correct discount for premium users"
+
+❌ BAD:
+- "test1"
+- "user test"
+```
+
+## Security
+
+### Input Validation
+
+Always validate and sanitize user input:
+
+- Never trust client-side data
+- Use allowlists over denylists
+- Validate types, formats, and ranges
+
+### Sensitive Data
+
+- Never commit secrets or credentials
+- Use environment variables for configuration
+- Sanitize logs to remove sensitive information
+
+## Comments
+
+### When to Comment
+
+Write comments for:
+- Complex algorithms that aren't immediately obvious
+- Non-obvious business logic decisions
+- Workarounds for third-party bugs
+- API documentation
+
+Don't comment:
+- Obvious code (the code should be self-explanatory)
+- What the code does (use meaningful names instead)
+
+```
+✅ GOOD:
+// Using exponential backoff to avoid overwhelming the rate-limited API
+// Max retries: 3, delays: 1s, 2s, 4s
+
+❌ BAD:
+// This function adds two numbers
+function add(a, b) { return a + b; }
+```
+
+## Git Practices
+
+### Commit Messages
+
+Format: `<type>: <description>`
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation changes
+- refactor: Code restructuring without behavior change
+- test: Adding or updating tests
+- chore: Maintenance tasks
+
+Example:
+```
+✅ GOOD: "feat: add user authentication with JWT"
+✅ GOOD: "fix: resolve memory leak in background worker"
+
+❌ BAD: "updates"
+❌ BAD: "fixed stuff"
+```

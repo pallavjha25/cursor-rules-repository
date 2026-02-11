@@ -1,0 +1,94 @@
+---
+description: Python coding standards and best practices
+globs: **/*.py
+alwaysApply: false
+---
+
+# Python Standards
+
+## Code Style
+
+Follow PEP 8 conventions with these specific guidelines:
+
+- Use 4 spaces for indentation (never tabs)
+- Maximum line length: 88 characters (Black formatter default)
+- Use snake_case for functions and variables
+- Use PascalCase for class names
+- Use UPPER_CASE for constants
+
+## Type Hints
+
+Always use type hints for function signatures:
+
+```python
+# ✅ GOOD
+def process_data(items: list[dict], threshold: float = 0.5) -> list[str]:
+    return [item["name"] for item in items if item["score"] > threshold]
+
+# ❌ BAD
+def process_data(items, threshold=0.5):
+    return [item["name"] for item in items if item["score"] > threshold]
+```
+
+## Error Handling
+
+Be explicit with exception handling:
+
+```python
+# ✅ GOOD
+try:
+    data = fetch_user(user_id)
+except UserNotFoundError as e:
+    logger.error(f"User {user_id} not found: {e}")
+    raise
+except DatabaseError as e:
+    logger.error(f"Database error: {e}")
+    return None
+
+# ❌ BAD
+try:
+    data = fetch_user(user_id)
+except:
+    pass
+```
+
+## Imports
+
+Organize imports in this order:
+
+1. Standard library imports
+2. Third-party imports
+3. Local application imports
+
+```python
+# ✅ GOOD
+import os
+from pathlib import Path
+
+import requests
+from fastapi import FastAPI
+
+from app.models import User
+from app.utils import logger
+```
+
+## Docstrings
+
+Use Google-style docstrings:
+
+```python
+def calculate_metrics(data: list[float], window_size: int = 10) -> dict:
+    """Calculate rolling metrics for the given data.
+    
+    Args:
+        data: List of numerical values to analyze
+        window_size: Size of the rolling window (default: 10)
+        
+    Returns:
+        Dictionary containing mean, std, and percentiles
+        
+    Raises:
+        ValueError: If window_size is larger than data length
+    """
+    pass
+```
